@@ -3,16 +3,45 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>PDF Tool</title>
+	<title>PDF Zone</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
 </head>
 <body>
-	<header class="header">
-		<h1>PDF Tool</h1>
-		<p>Compress PDFs or convert to JPG — fast and offline.</p>
-	</header>
+	<!-- Background Video -->
+	<video id="backgroundVideo" autoplay muted loop playsinline>
+		<source src="{{ url_for('static', filename='videos/background.mp4') }}" type="video/mp4">
+	</video>
 
-	<main class="container">
+	<!-- Top Left Logo -->
+	<div class="logo">
+		<img src="{{ url_for('static', filename='images/logo.png') }}" alt="Notes Zone Logo" />
+	</div>
+
+	<!-- Top Right Home Button -->
+	<div class="home-button">
+		<a href="https://noteszone.online/" class="btn-home">
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+				<polyline points="9,22 9,12 15,12 15,22"></polyline>
+			</svg>
+			<span>Home</span>
+		</a>
+	</div>
+
+	<!-- Main Content -->
+	<main class="main-content">
+		<!-- Title Section -->
+		<div class="title-section">
+			<h1 class="main-title">PDF Zone</h1>
+			<p class="subtitle">Easily compress or convert your PDFs – right from your Notes Zone dashboard</p>
+		</div>
+
+		<!-- 
+		<div class="character">
+			<img src="{{ url_for('static', filename='images/character.png') }}" alt="Character pointing" />
+		</div>
+
+		<!-- Upload Card -->
 		<div class="upload-card">
 			<form id="uploadForm" action="#" method="post" enctype="multipart/form-data">
 				<div id="dropzone" class="dropzone">
@@ -25,10 +54,9 @@
 					</div>
 				</div>
 
-
 				<div class="actions">
 					<button id="compressBtn" type="button" class="btn btn-primary" disabled>Compress PDF</button>
-					<button id="convertBtn" type="button" class="btn btn-outline" disabled>Convert to JPG</button>
+					<button id="convertBtn" type="button" class="btn btn-secondary" disabled>Convert to JPG</button>
 				</div>
 			</form>
 			<div id="loader" class="loader hidden">
@@ -38,8 +66,9 @@
 		</div>
 	</main>
 
+	<!-- Footer -->
 	<footer class="footer">
-		<p>Built with Flask · Works locally</p>
+		<p>Crafted with ❤️ by Notes Zone</p>
 	</footer>
 
 	<script>
