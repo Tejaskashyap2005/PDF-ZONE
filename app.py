@@ -23,7 +23,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FILES_FOLDER, exist_ok=True)
 
 app = Flask(__name__)
-app.secret_key = 'replace-this-with-a-random-secret'
+app.secret_key = os.environ.get('SECRET_KEY', 'fallback-key-for-development')
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB upload limit
 
 
