@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Result - PDF Tool</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+</head>
+<body>
+	<header class="header">
+		<h1>PDF Tool</h1>
+	</header>
+	<main class="container">
+		<div class="card">
+			<h2>Your file is being downloaded...</h2>
+			<p>If the download didn't start, go back and try again.</p>
+			<a class="btn btn-secondary" href="{{ url_for('index') }}">Back to Home</a>
+		</div>
+	</main>
+</body>
+</html>

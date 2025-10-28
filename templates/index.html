@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>PDF Tool</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+</head>
+<body>
+	<header class="header">
+		<h1>PDF Tool</h1>
+		<p>Compress PDFs or convert to JPG — fast and offline.</p>
+	</header>
+
+	<main class="container">
+		<div class="upload-card">
+			<form id="uploadForm" action="#" method="post" enctype="multipart/form-data">
+				<div id="dropzone" class="dropzone">
+					<input id="fileInput" type="file" name="pdf" accept="application/pdf" hidden />
+					<div class="dropzone-content">
+						<p class="dz-title">Drag & Drop your PDF here</p>
+						<p class="dz-sub">or</p>
+						<button id="chooseBtn" type="button" class="btn btn-secondary">Choose File</button>
+						<p id="fileName" class="file-name"></p>
+					</div>
+				</div>
+
+
+				<div class="actions">
+					<button id="compressBtn" type="button" class="btn btn-primary" disabled>Compress PDF</button>
+					<button id="convertBtn" type="button" class="btn btn-outline" disabled>Convert to JPG</button>
+				</div>
+			</form>
+			<div id="loader" class="loader hidden">
+				<div class="spinner"></div>
+				<p>Processing...</p>
+			</div>
+		</div>
+	</main>
+
+	<footer class="footer">
+		<p>Built with Flask · Works locally</p>
+	</footer>
+
+	<script>
+		const fileInput = document.getElementById('fileInput');
+		const chooseBtn = document.getElementById('chooseBtn');
+		const dropzone = document.getElementById('dropzone');
+		const fileNameEl = document.getElementById('fileName');
+		const compressBtn = document.getElementById('compressBtn');
+		const convertBtn = document.getElementById('convertBtn');
+		const loader = document.getElementById('loader');
+
+		chooseBtn.addEventListener('click', () => fileInput.click());
+		fileInput.addEventListener('change', () => {
+			if (fileInput.files.length > 0) {
+				fileNameEl.textContent = fileInput.files[0].name;
+				compressBtn.disabled = false;
+				convertBtn.disabled = false;
+			}
+		});
+
+		dropzone.addEventListener('dragover', (e) => {
+			e.preventDefault();
+			dropzone.classList.add('dragover');
+		});
+		dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+		dropzone.addEventListener('drop', (e) => {
+			e.preventDefault();
+			dropzone.classList.remove('dragover');
+			if (e.dataTransfer.files.length > 0) {
+				const file = e.dataTransfer.files[0];
+				if (file.type === 'application/pdf') {
+					fileInput.files = e.dataTransfer.files;
+					fileNameEl.textContent = file.name;
+					compressBtn.disabled = false;
+					convertBtn.disabled = false;
+				} else {
+					alert('Please drop a PDF file.');
+				}
+			}
+		});
+
+		function submitTo(endpoint) {
+			if (fileInput.files.length === 0) return;
+			const formData = new FormData();
+			formData.append('pdf', fileInput.files[0]);
+			loader.classList.remove('hidden');
+			compressBtn.disabled = true;
+			convertBtn.disabled = true;
+			chooseBtn.disabled = true;
+
+			fetch(endpoint, {
+				method: 'POST',
+				body: formData
+			}).then(async (res) => {
+				loader.classList.add('hidden');
+				chooseBtn.disabled = false;
+				if (!res.ok) {
+					const text = await res.text().catch(() => '');
+					alert('Something went wrong. ' + text);
+					return;
+				}
+				const disposition = res.headers.get('Content-Disposition');
+				const blob = await res.blob();
+				let filename = 'download';
+				if (disposition && disposition.includes('filename=')) {
+					filename = disposition.split('filename=')[1].replaceAll('"', '');
+				}
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				window.URL.revokeObjectURL(url);
+			}).catch(() => {
+				loader.classList.add('hidden');
+				chooseBtn.disabled = false;
+				alert('Network error.');
+			});
+		}
+
+		compressBtn.addEventListener('click', () => submitTo("{{ url_for('compress_route') }}"));
+		convertBtn.addEventListener('click', () => submitTo("{{ url_for('convert_route') }}"));
+	</script>
+</body>
+</html>
